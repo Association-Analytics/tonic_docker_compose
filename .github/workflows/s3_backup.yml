@@ -1,0 +1,23 @@
+# /.github/workflows/s3_backup.yml
+name: S3_Backup
+permissions:
+    contents: write
+    pull-requests: write
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+jobs:
+    backup:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
+          - name: S3 Backup
+            uses: peter-evans/s3-backup@v1
+            env:
+              ACCESS_KEY_ID: ${{ secrets.INFRA_USER_AWS_ACCESS_KEY_ID }}
+              MIRROR_TARGET: a2-github-backup/${{ github.event.repository.name }}
+              SECRET_ACCESS_KEY: ${{ secrets.INFRA_USER_AWS_SECRET_KEY }}
+            with:
+              args: --overwrite --remove
